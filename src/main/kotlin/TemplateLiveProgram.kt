@@ -4,13 +4,12 @@ import org.openrndr.color.ColorRGBa
 import org.openrndr.draw.ColorBufferShadow
 import org.openrndr.draw.Drawer
 import org.openrndr.draw.loadImage
+import org.openrndr.draw.shadeStyle
 import org.openrndr.extra.olive.oliveProgram
 import org.openrndr.ffmpeg.ScreenRecorder
+import org.openrndr.math.Matrix44
 import org.openrndr.math.Vector2
-import org.openrndr.shape.Circle
-import org.openrndr.shape.Rectangle
-import org.openrndr.shape.ShapeNode
-import org.openrndr.shape.map
+import org.openrndr.shape.*
 import org.openrndr.svg.loadSVG
 import kotlin.math.roundToInt
 
@@ -25,8 +24,6 @@ data class Hej(val va: String)
 
 val windowRect = Rectangle(0.0, 0.0, 768.0, 576.0)
 val balls = mutableListOf<Ball>()
-val composition = loadSVG("data/images/svtplay.svg")
-
 
 
 fun main() = application {
@@ -48,15 +45,21 @@ fun main() = application {
 
     oliveProgram {
         val testbild = loadImage("data/images/pm5544.png")
+        val composition = loadSVG("data/images/Primula_veris_floral_diagram.svg")
         val sh = testbild.shadow.apply { download() }
-        println(testbild.shadow[100, 100])
+
         composition.root.map {
+           // it.findShapes().forEach { println("${it.id} _____ ${it.fill}  ____ ") }
+            it.strokeWeight = 2.0
             if (it is ShapeNode) {
-                it.copy().bounds
+                it.copy(shape = it.shape.apply { it.fill = ColorRGBa.TRANSPARENT })
             } else {
                 it
             }
         }
+
+        //composition.findGroup("g73")?.fill = ColorRGBa(255.0,216.0,0.0)
+
 
         val recorder = ScreenRecorder().apply {
             outputToVideo = false
@@ -64,6 +67,7 @@ fun main() = application {
         extend(recorder)
         extend {
             drawer.clear(ColorRGBa.WHITE)
+            //   drawer.translate(width / 8.9, height / 19.0)
             drawer.image(testbild)
             balls.forEach { it.update(windowRect, drawer, sh) }
             drawer.composition(composition)
@@ -81,7 +85,7 @@ fun main() = application {
 }
 
 class Ball(var position: Vector2, var velocity: Vector2) {
-    val radius = 16.0
+    private val radius = 17.0
     fun update(windowRect: Rectangle, drawer: Drawer, sh: ColorBufferShadow) {
         if (position.x < radius || position.x > windowRect.width - radius) {
             velocity = velocity.copy(x = -velocity.x)
