@@ -160,49 +160,6 @@
       </defs>
     </g>
     <!-- PESTÍK -->
-    <defs
-       id="defs87">
-      <pattern
-         id="tecky"
-         width="12"
-         height="12"
-         patternUnits="userSpaceOnUse"
-         patternTransform="scale(0.65)">
-        <rect
-           x="0"
-           y="0"
-           width="12"
-           height="12"
-           fill="#e4ed2f"
-           id="rect75" />
-        <circle
-           id="kruh"
-           cx="0"
-           cy="0"
-           r="1.75"
-           fill="#848a16" />
-        <use
-           xlink:href="#kruh"
-           x="6"
-           y="6"
-           id="use78" />
-        <use
-           xlink:href="#kruh"
-           x="0"
-           y="12"
-           id="use80" />
-        <use
-           xlink:href="#kruh"
-           x="12"
-           y="0"
-           id="use82" />
-        <use
-           xlink:href="#kruh"
-           x="12"
-           y="12"
-           id="use84" />
-      </pattern>
-    </defs>
     <g
        transform="rotate(-90,165,-315)"
        id="g92">
@@ -306,85 +263,7 @@
            id="path126" />
       </g>
     </g>
-    <g
-       clip-path="url(#orezspojeni)"
-       id="g151">
-      <line
-         x1="354.37015"
-         y1="225.16592"
-         x2="476.33557"
-         y2="57.294903"
-         style="stroke:#977c00;stroke-width:2;stroke-linecap:round"
-         id="line131" />
-      <use
-         xlink:href="#tycinky"
-         x="354.37015"
-         y="225.16592"
-         transform="rotate(126,354.37014,225.16593)"
-         id="use133"
-         width="100%"
-         height="100%" />
-      <line
-         x1="387.97272"
-         y1="328.58408"
-         x2="585.31696"
-         y2="392.70511"
-         style="stroke:#977c00;stroke-width:2;stroke-linecap:round"
-         id="line135" />
-      <use
-         xlink:href="#tycinky"
-         x="387.97272"
-         y="328.58408"
-         transform="rotate(-162,387.97273,328.58407)"
-         id="use137"
-         width="100%"
-         height="100%" />
-      <line
-         x1="300"
-         y1="392.5"
-         x2="300"
-         y2="600"
-         style="stroke:#977c00;stroke-width:2;stroke-linecap:round"
-         id="line139" />
-      <use
-         xlink:href="#tycinky"
-         x="300"
-         y="392.5"
-         transform="rotate(-90,300,392.5)"
-         id="use141"
-         width="100%"
-         height="100%" />
-      <line
-         x1="212.02727"
-         y1="328.58408"
-         x2="14.683045"
-         y2="392.70511"
-         style="stroke:#977c00;stroke-width:2;stroke-linecap:round"
-         id="line143" />
-      <use
-         xlink:href="#tycinky"
-         x="212.02727"
-         y="328.58408"
-         transform="rotate(-18,212.02727,328.58407)"
-         id="use145"
-         width="100%"
-         height="100%" />
-      <line
-         x1="245.62987"
-         y1="225.16592"
-         x2="123.66442"
-         y2="57.294903"
-         style="stroke:#977c00;stroke-width:2;stroke-linecap:round"
-         id="line147" />
-      <use
-         xlink:href="#tycinky"
-         x="245.62987"
-         y="225.16592"
-         transform="rotate(54,245.62986,225.16593)"
-         id="use149"
-         width="100%"
-         height="100%" />
-    </g>
+
     <!-- VAJÍČKA II -->
     <g
        transform="rotate(-90,-35,-115)"

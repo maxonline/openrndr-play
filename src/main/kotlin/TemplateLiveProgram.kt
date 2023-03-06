@@ -44,22 +44,26 @@ fun main() = application {
     }
 
     oliveProgram {
-        val testbild = loadImage("data/images/Primula_veris_floral_diagram_large.png")
+        val blossom = loadImage("data/images/Primula_veris_floral_diagram_large.png")
         val composition = loadSVG("data/images/Primula_veris_floral_diagram.svg")
-        val sh = testbild.shadow.apply { download() }
+        val sh = blossom.shadow.apply { download() }
 
-        composition.root.map {
-           // it.findShapes().forEach { println("${it.id} _____ ${it.fill}  ____ ") }
-            it.strokeWeight = 2.0
-            if (it is ShapeNode) {
-                it.copy(shape = it.shape.apply { it.fill = ColorRGBa.TRANSPARENT })
+        composition.root.map { node ->
+            node.findShapes().forEach {
+                if (it.fill == ColorRGBa.BLACK) {
+                    it.fill = ColorRGBa.TRANSPARENT
+                }
+                if (it.fill == ColorRGBa.WHITE) {
+                    it.fill = ColorRGBa.TRANSPARENT
+                }
+            }
+            node.strokeWeight = 2.0
+            if (node is ShapeNode) {
+                node
             } else {
-                it
+                node
             }
         }
-
-        //composition.findGroup("g73")?.fill = ColorRGBa(255.0,216.0,0.0)
-
 
         val recorder = ScreenRecorder().apply {
             outputToVideo = false
@@ -67,8 +71,7 @@ fun main() = application {
         extend(recorder)
         extend {
             drawer.clear(ColorRGBa.WHITE)
-            //   drawer.translate(width / 8.9, height / 19.0)
-            drawer.image(testbild)
+            drawer.image(blossom)
             balls.forEach { it.update(windowRect, drawer, sh) }
          //  drawer.composition(composition)
         }
