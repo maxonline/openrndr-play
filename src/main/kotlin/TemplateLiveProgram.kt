@@ -22,7 +22,7 @@ import kotlin.math.roundToInt
 
 data class Hej(val va: String)
 
-val windowRect = Rectangle(0.0, 0.0, 768.0, 576.0)
+val windowRect = Rectangle(0.0, 0.0, 588.0, 768.0)
 val balls = mutableListOf<Ball>()
 
 
@@ -44,7 +44,7 @@ fun main() = application {
     }
 
     oliveProgram {
-        val testbild = loadImage("data/images/pm5544.png")
+        val testbild = loadImage("data/images/Primula_veris_floral_diagram_large.png")
         val composition = loadSVG("data/images/Primula_veris_floral_diagram.svg")
         val sh = testbild.shadow.apply { download() }
 
@@ -70,7 +70,7 @@ fun main() = application {
             //   drawer.translate(width / 8.9, height / 19.0)
             drawer.image(testbild)
             balls.forEach { it.update(windowRect, drawer, sh) }
-            drawer.composition(composition)
+         //  drawer.composition(composition)
         }
         keyboard.keyDown.listen {
             when {
@@ -85,7 +85,7 @@ fun main() = application {
 }
 
 class Ball(var position: Vector2, var velocity: Vector2) {
-    private val radius = 17.0
+    private val radius = 14.0
     fun update(windowRect: Rectangle, drawer: Drawer, sh: ColorBufferShadow) {
         if (position.x < radius || position.x > windowRect.width - radius) {
             velocity = velocity.copy(x = -velocity.x)
