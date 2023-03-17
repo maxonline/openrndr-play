@@ -1,5 +1,4 @@
-import org.openrndr.KEY_ESCAPE
-import org.openrndr.application
+import org.openrndr.*
 import org.openrndr.color.ColorRGBa
 import org.openrndr.draw.ColorBufferShadow
 import org.openrndr.draw.Drawer
@@ -8,78 +7,91 @@ import org.openrndr.extra.olive.oliveProgram
 import org.openrndr.ffmpeg.ScreenRecorder
 import org.openrndr.math.Vector2
 import org.openrndr.shape.*
+enum class ArrowKey {
+    DOWN,
+    UP,
+    LEFT,
+    RIGHT
+}
 
-/**
- *  This is a template for a live program.
- *
- *  It uses oliveProgram {} instead of program {}. All code inside the
- *  oliveProgram {} can be changed while the program is running.
- */
+var arrow: ArrowKey? = null
 
-data class Hej(val va: String)
+val windowRect = Rectangle(0.0, 0.0, 1000.0, 800.0)
 
-val windowRect = Rectangle(0.0, 0.0, 768.0, 576.0)
-val balls = mutableListOf<Ball>()
+var playerPosition = windowRect.center.copy()
 
+val points = createGrid(50, 40, 10.0)
 
 fun main() = application {
-    for (x in 30..(windowRect.width.toInt()) - 30 step 60) {
-        for (y in 30..(windowRect.height.toInt()) - 30 step 60) {
-            balls.add(
-                Ball(
-                    Vector2(x.toDouble(), y.toDouble()),
-                    Vector2(Math.random(), Math.random()).normalized * 2.0
-                )
-            )
-        }
-    }
-
     configure {
         width = windowRect.width.toInt()
         height = windowRect.height.toInt()
     }
 
     oliveProgram {
-        val testbild = loadImage("data/images/pm5544.png")
-        val sh = testbild.shadow.apply { download() }
-        val recorder = ScreenRecorder().apply {
-            outputToVideo = false
-        }
-        extend(recorder)
+        var fps = 0.0
+        var lastTime = System.currentTimeMillis()
+
         extend {
-            drawer.clear(ColorRGBa.WHITE)
-            drawer.image(testbild)
-            balls.forEach { it.update(windowRect, drawer, sh) }
+            val currentTime = System.currentTimeMillis()
+            val deltaTime = (currentTime - lastTime) / 1000.0
+            fps = 1.0 / deltaTime
+            lastTime = currentTime
+
+            when (arrow){
+                ArrowKey.DOWN -> playerPosition = playerPosition.copy(y = playerPosition.y+2)
+                ArrowKey.UP -> playerPosition = playerPosition.copy(y = playerPosition.y-2)
+                ArrowKey.LEFT -> playerPosition = playerPosition.copy(x = playerPosition.x-2)
+                ArrowKey.RIGHT -> playerPosition = playerPosition.copy(x = playerPosition.x+2)
+                null -> ""
+            }
+            drawer.fill = ColorRGBa.GREEN
+            drawer.stroke = null
+            drawer.circle(playerPosition, 10.0)
+
+            drawer.text(arrow?.name ?: "null", 10.0, 10.0)
+            drawer.text(playerPosition.toString(), 10.0, 30.0)
+            drawer.text(fps.toString(), 10.0, 60.0)
+
+            drawer.fill = ColorRGBa.WHITE
+            points.forEach{
+                drawer.point(it)
+            }
+
+
         }
         keyboard.keyDown.listen {
             when {
-                it.key == KEY_ESCAPE -> program.application.exit()
-                it.name == "v" -> {
-                    recorder.outputToVideo = !recorder.outputToVideo
-                    println(if (recorder.outputToVideo) "Recording" else "Paused")
-                }
+                it.key == KEY_ARROW_UP -> arrow = ArrowKey.UP
+                it.key == KEY_ARROW_DOWN -> arrow = ArrowKey.DOWN
+                it.key == KEY_ARROW_LEFT -> arrow = ArrowKey.LEFT
+                it.key == KEY_ARROW_RIGHT -> arrow = ArrowKey.RIGHT
+
+            }
+        }
+        keyboard.keyUp.listen {
+            when {
+                it.key == KEY_ARROW_UP -> if (arrow == ArrowKey.UP) arrow = null
+                it.key == KEY_ARROW_DOWN -> if (arrow == ArrowKey.DOWN) arrow = null
+                it.key == KEY_ARROW_LEFT -> if (arrow == ArrowKey.LEFT) arrow = null
+                it.key == KEY_ARROW_RIGHT -> if (arrow == ArrowKey.RIGHT) arrow = null
+
             }
         }
     }
 }
 
-class Ball(var position: Vector2, var velocity: Vector2) {
-    private val radius = 17.0
-    fun update(windowRect: Rectangle, drawer: Drawer, sh: ColorBufferShadow) {
-        if (position.x < radius || position.x > windowRect.width - radius) {
-            velocity = velocity.copy(x = -velocity.x)
+fun createGrid(xSize: Int, ySize: Int, spacing: Double): List<Vector2> {
+    val points = mutableListOf<Vector2>()
+
+    for (i in 0 until xSize) {
+        for (j in 0 until ySize) {
+            val x = i * spacing
+            val y = j * spacing
+            val point = Vector2(x, y)
+            points.add(point)
         }
-        if (position.y < radius || position.y > windowRect.height - radius) {
-            velocity = velocity.copy(y = -velocity.y)
-        }
-        position += velocity
-        val colorFromTestbild = if (windowRect.contains(this.position)) {
-            sh[(this.position.x).toInt(), (this.position.y).toInt()]
-        } else {
-            ColorRGBa.BLACK
-        }
-        drawer.fill = colorFromTestbild
-        drawer.stroke = null
-        drawer.circle(position, radius)
     }
+
+    return points
 }
