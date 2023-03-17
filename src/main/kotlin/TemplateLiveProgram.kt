@@ -1,8 +1,12 @@
 import org.openrndr.*
 import org.openrndr.color.ColorRGBa
 import org.openrndr.extra.olive.oliveProgram
+import org.openrndr.ffmpeg.ScreenRecorder
 import org.openrndr.math.Vector2
 import org.openrndr.shape.Rectangle
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
 
 enum class ArrowKey { DOWN, UP, LEFT, RIGHT }
 
@@ -10,12 +14,12 @@ var arrow: ArrowKey? = null
 
 val windowRect = Rectangle(0.0, 0.0, 1000.0, 800.0)
 
-var playerPosition = windowRect.center
+var playerPosition = Vector2(0.0, 0.0)
 
-val points = createGrid(100, 80, 10.0)
+val points = createGrid(70, 60, 10.0)
 
-val dx = Vector2(2.0, 0.0)
-val dy = Vector2(0.0, 2.0)
+val dx = Vector2(3.0, 0.0)
+val dy = Vector2(0.0, 3.0)
 
 fun main() = application {
     configure {
@@ -28,6 +32,7 @@ fun main() = application {
         var lastTime = System.currentTimeMillis()
         var diplayFps = 0
 
+        extend(ScreenRecorder())
         extend {
 
             when (arrow) {
@@ -39,7 +44,7 @@ fun main() = application {
             }
             drawer.fill = ColorRGBa.GREEN
             drawer.stroke = null
-            drawer.circle(playerPosition, 10.0)
+            drawer.circle(windowRect.center, 10.0)
 
             drawer.text(arrow?.name ?: "null", 10.0, 20.0)
             drawer.text(playerPosition.toString(), 10.0, 40.0)
@@ -50,8 +55,18 @@ fun main() = application {
             }
             drawer.text(diplayFps.toString().take(5), 10.0, 60.0)
 
-            drawer.fill = ColorRGBa.WHITE
-            drawer.points(points)
+            drawer.points{
+                points.forEach{
+                    val screenPosition =  Vector2(it.x - playerPosition.x, it.y - playerPosition.y)
+                    val windowsDistanceToPlayer = screenPosition.distanceTo(windowRect.center)
+                    val factor = windowsDistanceToPlayer / 500
+                    val minusFactor = factor * -1.0 + 1.0
+                    fill = ColorRGBa.WHITE
+                    val angle = getAngleBetweenPoints(screenPosition, windowRect.center)
+                    val newPoint = getPointAtDistanceAndAngle(windowRect.center, angle, windowsDistanceToPlayer*windowsDistanceToPlayer/100)
+                    point(newPoint)
+                }
+            }
         }
         keyboard.keyDown.listen {
             when (it.key) {
@@ -70,6 +85,18 @@ fun main() = application {
             }
         }
     }
+}
+
+fun getAngleBetweenPoints(point1: Vector2, point2: Vector2): Double {
+    val deltaX = point2.x - point1.x
+    val deltaY = point2.y - point1.y
+    return atan2(deltaY, deltaX)
+}
+
+fun getPointAtDistanceAndAngle(point: Vector2, angle: Double, distance: Double): Vector2 {
+    val newX = point.x + distance * cos(angle)
+    val newY = point.y + distance * sin(angle)
+    return Vector2(newX, newY)
 }
 
 fun createGrid(xSize: Int, ySize: Int, spacing: Double) =
