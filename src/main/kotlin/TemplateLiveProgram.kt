@@ -24,14 +24,11 @@ fun main() = application {
     }
 
     oliveProgram {
-        var fps = 0.0
+        var lastFrameCount = 0
         var lastTime = System.currentTimeMillis()
+        var diplayFps = 0
 
         extend {
-            val currentTime = System.currentTimeMillis()
-            val deltaTime = (currentTime - lastTime) / 1000.0
-            fps = 1.0 / deltaTime
-            lastTime = currentTime
 
             when (arrow) {
                 ArrowKey.DOWN -> playerPosition += dy
@@ -46,7 +43,12 @@ fun main() = application {
 
             drawer.text(arrow?.name ?: "null", 10.0, 20.0)
             drawer.text(playerPosition.toString(), 10.0, 40.0)
-            drawer.text(fps.toString().take(5), 10.0, 60.0)
+            if (System.currentTimeMillis() - lastTime > 1000) {
+                diplayFps = frameCount - lastFrameCount
+                lastFrameCount = frameCount;
+                lastTime = System.currentTimeMillis()
+            }
+            drawer.text(diplayFps.toString().take(5), 10.0, 60.0)
 
             drawer.fill = ColorRGBa.WHITE
             drawer.points(points)
